@@ -1,0 +1,973 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+	    <title>Espresso Book Machine Scenario Planner</title>
+		<script type="text/javascript" src="dat.gui.min.js"></script>
+	    <script type="text/javascript" src="d3.v2.js"></script>
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript" src="jquery.svg.js"></script>
+		<script type="text/javascript">
+		// <svg id="weekly_labor"></svg>
+		// <svg id="npv"></svg>
+		function export_svg() {
+			var to_grab = "svg#revenue_types";
+			$(to_grab).svg();
+			var xml = $(to_grab).svg('get').toSVG();
+			$('#svgexport').html(xml.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+		}
+		</script>
+		
+		<!-- Styles don't flow into exported SVG, so only use for web -->
+
+
+	</head>
+  	<body>
+
+    <script type="text/javascript">
+	
+	var gui = new dat.GUI();
+
+	var dat_gui_ranges_with_folder  = {
+		// scale					: ["chart", 0.01, 3],
+		// 
+		// row0: ["chart", 0, 75],		
+		// row1: ["chart", 0, 75],
+		// row2: ["chart", 0, 75],
+		// row3: ["chart", 0, 75],
+		// row4: ["chart", 0, 75],
+		// row5: ["chart", 0, 75],
+		// row6: ["chart", 0, 75],
+		// row7: ["chart", 0, 75],
+		// row8: ["chart", 0, 75],
+		// row9: ["chart", 0, 75],
+		
+		// w						: ["chart", 0, 800],
+		// h						: ["chart", 0, 1200],
+		// t_margin 				: ["chart", 0, 100],
+		// r_margin 				: ["chart", 0, 100],
+		// b_margin 				: ["chart", 0, 100],
+		// l_margin 				: ["chart", 0, 100],
+		// bar_width				: ["chart", 0, 1],
+		// band_divider			: ["chart", 1, 5],
+		// 
+		// tick_length				: ["chart", 0, 20],
+		// y_axis_fontsize			: ["chart", 0, 20],		
+		// x_axis_font_rotation	: ["chart", 0, 360],
+		
+		// book_block_size 		: ["chart", 1, 10],
+		// book_space_size			: ["chart", 1, 5],
+		// book_row_length			: ["chart", 10, 50],
+		// project_block_size		: ["chart", 5, 25],
+		// project_space_size		: ["chart", 1, 10],
+		// project_row_length 		: ["chart", 1, 5],
+		// block_margin			: ["chart", 10, 50],
+		
+		tax_rate		 		: ["fin_details", 0, 0.4],
+		int_rate		 		: ["fin_details", 0, 1],
+		nwc_needs		 		: ["fin_details", 0, 1.5],
+
+		cost_per_pg		 		: ["op_details", 0.01, 0.05],
+		project_time 			: ["op_details", 0.5, 3],
+		book_time		 		: ["op_details", 0.05, 0.1],
+
+		op_wages_yr1			: ["operator_wages", 0, 50],
+		op_wages_yr2			: ["operator_wages", 0, 50],
+		op_wages_yr3			: ["operator_wages", 0, 50],
+		op_wages_yr4			: ["operator_wages", 0, 50],
+		op_wages_yr5			: ["operator_wages", 0, 50],
+
+		yr0_grant				: ["grant_support", 0, 100000],
+		yr1_grant				: ["grant_support", 0, 150000],	
+		yr2_grant				: ["grant_support", 0, 150000],
+		yr3_grant				: ["grant_support", 0, 150000],
+		yr4_grant				: ["grant_support", 0, 150000],
+		yr5_grant				: ["grant_support", 0, 150000],
+
+		init_demand_sp			: ["self_publishing", 0, 600],
+		project_price_sp		: ["self_publishing", 0, 1000],
+		demand_growth_sp		: ["self_publishing", 0, 1],
+		books_per_project_sp	: ["self_publishing", 5, 25],
+		pages_per_book_sp		: ["self_publishing", 50, 300],
+		sales_price_sp			: ["self_publishing", 5, 20],
+
+		init_demand_pods		: ["pod_service", 0, 15000],
+		required_margin_pods	: ["pod_service", 0, 1],
+		demand_growth_pods		: ["pod_service", 0, 1],
+		pages_per_book_pods		: ["pod_service", 50, 300],
+
+		init_demand_podr		: ["pod_retail", 0, 15000],
+		content_fee_podr		: ["pod_retail", 0, 0.35],
+		demand_growth_podr		: ["pod_retail", 0, 1],
+		pages_per_book_podr		: ["pod_retail", 50, 300],
+		sales_price_podr		: ["pod_retail", 12, 25],
+
+		ebm_cost				: ["equipment", 0, 80000],
+		ebm_installation_cost	: ["equipment", 0, 15000],
+		ebm_software_license	: ["equipment", 0, 25000],
+		printer_cost			: ["equipment", 0, 15000],
+		monthly_service_cost	: ["equipment", 0, 4000],
+		
+	}
+	var dat_gui_ranges = {
+		scale			: [0.01, 3],
+		w				: [0, 800],
+		h				: [0, 1200],
+		t_margin 		: [0, 100],
+		r_margin 		: [0, 100],
+		b_margin 		: [0, 100],
+		l_margin 		: [0, 100],
+		tick_length		: [0, 20],
+		y_axis_fontsize		: [0, 20],		
+		x_axis_font_rotation: [0, 360],
+		
+	}
+
+	//put all hard coded values in this object
+	var params = {
+		
+		tax_rate		 		: 0.0,
+		int_rate		 		: 0.06,
+		nwc_needs		 		: 0.25,
+
+		cost_per_pg		 		: 0.015,
+		project_time 			: 1,
+		book_time		 		: 0.08,
+
+		op_wages_yr1			: 50,
+		op_wages_yr2			: 50,
+		op_wages_yr3			: 50,
+		op_wages_yr4			: 50,
+		op_wages_yr5			: 50,
+
+		yr0_grant				: 20000,
+		yr1_grant				: 0,
+		yr2_grant				: 0,
+		yr3_grant				: 0,
+		yr4_grant				: 0,
+		yr5_grant				: 0,
+
+		init_demand_sp			: 150,
+		project_price_sp		: 150,
+		demand_growth_sp		: .2,
+		books_per_project_sp	: 15,
+		pages_per_book_sp		: 100,
+		sales_price_sp			: 10,
+
+		init_demand_pods		: 2000,
+		required_margin_pods	: 0.6,
+		demand_growth_pods		: .02,
+		pages_per_book_pods		: 250,
+
+		init_demand_podr		: 250,
+		content_fee_podr		: 0.2,
+		demand_growth_podr		: 0.1,
+		pages_per_book_podr		: 250,
+		sales_price_podr		: 18,
+
+		ebm_cost				: 60000,
+		ebm_installation_cost	: 10000,
+		ebm_software_license	: 15000,
+		printer_cost			: 10000,
+		monthly_service_cost	: 600,
+		
+		//not in controls
+		get_rate				:0.045,
+		book_fee				:1,
+		book_demand_sp			:0,
+		materials_cost_sp		:0,
+		profit_margin_sp		:0,
+		materials_cost_pods		:0,
+		profit_margin_pods		:0,
+		sales_price_pods		:0,
+		materials_cost_podr		:0,
+		profit_margin_podr		:0,
+		content_cost_podr		:0,
+		equipment_cost			:0,
+		
+		//chart params
+		scale: 1,
+		w: 500,
+		h: 650,//300,
+		t_margin: 20,
+		r_margin: 15,
+		b_margin: 42,
+		l_margin: 50,
+		band_divider: 2,
+		
+		book_block_size: 5,
+		book_space_size: 2,
+		book_row_length: 15,
+		project_block_size: 15,
+		project_space_size:5,
+		project_row_length: 3,
+		block_margin: 25,
+		
+		row0: 15,
+		row1: 25,
+		row2: 20,
+		row3: 30,
+		row4: 25,
+		row5: 25,
+		row6: 30,
+		row7: 25,
+		row8: 25,
+		row9: 45,
+		
+		bar_width: 0.3,
+		tick_length: 7,
+		
+		x_axis_color: "gray",
+		x_axis_fontcolor: "gray",
+		x_axis_fontsize: 10,
+		x_axis_font_rotation: 320,
+
+		y_axis_color: "gray",
+		y_axis_fontcolor: "gray",
+		y_axis_fontsize: 10,
+		//chart params end---------
+		
+		
+		//just to store for redraw
+		viz_data: [],
+	};
+	//d.toFixed(2)
+	function get_assumption_array() {
+		
+		params.book_demand_sp = params.init_demand_sp * params.books_per_project_sp;
+		params.materials_cost_sp = params.pages_per_book_sp * params.cost_per_pg; 
+		params.profit_margin_sp = params.sales_price_sp - params.materials_cost_sp - params.book_fee;
+
+		params.materials_cost_pods = (params.pages_per_book_pods * params.cost_per_pg); 
+		params.profit_margin_pods = ((params.materials_cost_pods + params.book_fee) * params.required_margin_pods)  / (1-params.required_margin_pods);
+		params.sales_price_pods = params.profit_margin_pods + params.materials_cost_pods + params.book_fee;
+
+		params.materials_cost_podr = (params.pages_per_book_podr * params.cost_per_pg); 
+		params.content_cost_podr = (params.sales_price_podr * params.content_fee_podr) ;
+		params.profit_margin_podr = params.sales_price_podr - params.materials_cost_podr - params.book_fee - params.content_cost_podr;
+		
+		params.equipment_cost = params.ebm_cost + params.ebm_installation_cost + params.ebm_software_license + params.printer_cost;
+		
+		return [
+			{label: "NPV", value: get_project_npv()},
+			{label: "Financial Details", value: ""},
+			{label: "Tax Rate", value: (params.tax_rate*100).toFixed(0) + "%"},
+			{label: "Interest Rate", value: (params.int_rate*100).toFixed(2) + "%" },
+			{label: "Net Working Capital Needs (%)", value: (params.nwc_needs*100).toFixed(0) + "%" },
+			{label: "Grant Support", value: (	(params.yr0_grant/1000).toFixed(0) + "K / " + 
+												(params.yr1_grant/1000).toFixed(0) + "K / " + 
+												(params.yr2_grant/1000).toFixed(0) + "K / " +
+												(params.yr3_grant/1000).toFixed(0) + "K / " +
+												(params.yr4_grant/1000).toFixed(0) + "K / " +
+												(params.yr5_grant/1000).toFixed(0) + "K")},
+			
+			{label: "Operational Details", value: ""},			
+			{label: "Book Fee", value: "$" + params.book_fee.toFixed(2)},
+			{label: "Average Cost Per Page", value: params.cost_per_pg.toFixed(2) * 100 + " cents" },
+			{label: "Project Set Up Time", value: params.project_time.toFixed(1) + " hrs" },
+			{label: "Book Printing Time", value: (params.book_time*60).toFixed(0) + " mins" },
+			{label: "Operator Wages", value: (	params.op_wages_yr1.toFixed(0) + "K / " + 
+												params.op_wages_yr2.toFixed(0) + "K / " + 
+												params.op_wages_yr3.toFixed(0) + "K / " + 
+												params.op_wages_yr4.toFixed(0) + "K / " + 
+												params.op_wages_yr5.toFixed(0) + "K")},
+			
+			{label: "Equipment Costs", value: ""},			
+			{label: "Espresso Book Machine", value: "$" + (params.ebm_cost / 1000).toFixed(1) + "K"},
+			{label: "Installation", value: "$" + (params.ebm_installation_cost / 1000).toFixed(1) + "K"},
+			{label: "Software License", value: "$" + (params.ebm_software_license / 1000).toFixed(1) + "K"},
+			{label: "Printer Cost", value: "$" + (params.printer_cost / 1000).toFixed(1) + "K" },
+			{label: "Monthly Service Cost", value: "$" + params.monthly_service_cost.toFixed(0) },
+			
+			{label: "Self Publishing", value: ""},
+			{label: "Project Demand", value: params.init_demand_sp.toFixed(0) },
+			{label: "Books per Project", value: params.books_per_project_sp.toFixed(0) },
+			{label: "Book Demand", value: params.book_demand_sp.toFixed(0)},
+			{label: "Pages Per Book", value: params.pages_per_book_sp.toFixed(0) },
+			{label: "Materials Cost", value: "$"+ params.materials_cost_sp.toFixed(2) },
+			{label: "Book Fee", value: "$"+params.book_fee.toFixed(2) },
+			{label: "Sales Price", value: "$"+params.sales_price_sp.toFixed(2) },
+			{label: "Profit Margin", value: "$" + params.profit_margin_sp.toFixed(2) },
+			{label: "Profit Margin(%)", value: (params.profit_margin_sp / params.sales_price_sp * 100).toFixed(0) + "%" },
+			
+			{label: "Print-on-Demand Service", value: "" },
+			{label: "Book Demand", value: params.init_demand_pods.toFixed(0) },
+			{label: "Pages Per Book", value: params.pages_per_book_pods.toFixed(0) },
+			{label: "Materials Cost", value: "$"+ params.materials_cost_pods.toFixed(2) },
+			{label: "Book Fee", value: "$"+params.book_fee.toFixed(2) },
+			{label: "Sales Price", value: "$"+params.sales_price_pods.toFixed(2) },
+			{label: "Profit Margin", value:  "$"+params.profit_margin_pods.toFixed(2)},
+			{label: "Profit Margin(%)", value: (params.required_margin_pods * 100).toFixed(0) + "%" },
+
+			{label: "Print-on-Demand Retail", value: "" },
+			{label: "Book Demand", value: params.init_demand_podr.toFixed(0) },
+			{label: "Pages Per Book", value: params.pages_per_book_podr.toFixed(0) },
+			{label: "Materials Cost", value: "$"+ params.materials_cost_podr.toFixed(2) },
+			{label: "Book Fee", value: "$"+params.book_fee.toFixed(2) },
+			{label: "Content Fee", value: "$"+params.content_cost_podr.toFixed(2) },			
+			{label: "Sales Price", value: "$"+params.sales_price_podr.toFixed(2) },
+			{label: "Profit Margin", value:  "$"+params.profit_margin_podr.toFixed(2)},
+			{label: "Profit Margin(%)", value: (params.profit_margin_podr / params.sales_price_podr * 100).toFixed(0) + "%" },
+			
+		];
+		
+	}
+
+	var p = params;
+	
+	//growth rate, ps_demand, pods_demand, podr_demand, time_per_proj, time_per_book
+	function operator_wages(year) {
+		switch(year) {
+			case 1: return p.op_wages_yr1 * 1000; break;
+			case 2: return p.op_wages_yr2 * 1000; break;
+			case 3: return p.op_wages_yr3 * 1000; break;
+			case 4: return p.op_wages_yr4 * 1000; break;
+			case 5: return p.op_wages_yr5 * 1000; break;
+			default: return 0;
+		}
+	}
+	
+	function grant_support(year) {
+		switch(year) {
+			case 0: return p.yr0_grant; break;
+			case 1: return p.yr1_grant; break;
+			case 2: return p.yr2_grant; break;
+			case 3: return p.yr3_grant; break;
+			case 4: return p.yr4_grant; break;
+			case 5: return p.yr5_grant; break;
+			default: return 0;
+		}
+	}
+	
+	function projects_per_year(year) { if (year === 0) return 0; return Math.pow(1 + p.demand_growth_sp, year-1) * p.init_demand_sp }
+	function sp_book_demand(year) { if (year === 0) return 0; return Math.pow(1 + p.demand_growth_sp, year-1) * p.book_demand_sp }
+	function pods_book_demand(year) { if (year === 0) return 0; return Math.pow(1 + p.demand_growth_pods, year-1) * p.init_demand_pods }
+	function podr_book_demand(year) { if (year === 0) return 0; return Math.pow(1 + p.demand_growth_podr, year-1) * p.init_demand_podr }
+	function total_book_demand(year) { return projects_per_year(year) + sp_book_demand(year) + pods_book_demand(year) + podr_book_demand(year)}
+	
+	function printing_hours_per_week(year) { return (total_book_demand(year) * p.book_time) / 52 }
+	function project_hours_per_week(year) { return (projects_per_year(year) * p.project_time) / 52 }
+	function free_hours_per_week(year) { return (40 * operator_wages(year) / 50000) - printing_hours_per_week(year) - project_hours_per_week(year) }
+	
+	function per_book_costs_from_sp(year) { return -1 * (p.book_fee + p.materials_cost_sp) }
+	function per_book_costs_from_pods(year) { return -1 * (p.book_fee + p.materials_cost_pods) }
+	function per_book_costs_from_podr(year) { return -1 * (p.book_fee + p.materials_cost_podr + p.content_cost_podr) }
+	
+	function revenues_from_sp(year) { return projects_per_year(year) * p.project_price_sp + sp_book_demand(year) * p.sales_price_sp }
+	function revenues_from_pods(year) { return pods_book_demand(year) * p.sales_price_pods }
+	function revenues_from_podr(year) { return podr_book_demand(year) * p.sales_price_podr }
+	
+	function var_costs_from_sp(year) { return (sp_book_demand(year)+projects_per_year(year)) * per_book_costs_from_sp(year) }
+	function var_costs_from_pods(year) { return pods_book_demand(year) * per_book_costs_from_pods(year) }
+	function var_costs_from_podr(year) { return podr_book_demand(year) * per_book_costs_from_podr(year) }
+		
+	function fixed_costs(year) { if (year === 0) return 0; return -1 * (p.monthly_service_cost * 12 + operator_wages(year)) }
+	
+	function total_revenue(year) { return revenues_from_sp(year) + revenues_from_pods(year) + revenues_from_podr(year) }
+	function total_var_costs(year) { return var_costs_from_sp(year) + var_costs_from_pods(year) + var_costs_from_podr(year) }
+
+	function get_taxes_from_sp(year) { return -1 * p.get_rate * revenues_from_sp(year) }
+	function get_taxes_from_pods(year) { return -1 * p.get_rate * revenues_from_pods(year) }
+	function get_taxes_from_podr(year) { return -1 * p.get_rate * revenues_from_podr(year) }
+	function get_taxes(year) {return get_taxes_from_sp(year) + get_taxes_from_pods(year) + get_taxes_from_podr(year)}
+
+	function var_costs_with_get_from_sp(year) { return get_taxes_from_sp(year) + var_costs_from_sp(year) }
+	function var_costs_with_get_from_pods(year) { return get_taxes_from_pods(year) + var_costs_from_pods(year) }
+	function var_costs_with_get_from_podr(year) { return get_taxes_from_podr(year) + var_costs_from_podr(year) }
+	
+	function nwc_needs(year) { if (year === 5) return 0; return p.nwc_needs * total_var_costs(year + 1) }
+	function nwc_investment(year) { if (year === 0) return nwc_needs(0); return nwc_needs(year) - nwc_needs(year-1) }
+	function nwc_negative(year) {var nwc = nwc_investment(year); if (nwc > 0) return 0; return nwc }
+	function nwc_positive(year) {var nwc = nwc_investment(year); if (nwc < 0) return 0; return nwc }
+	
+	function equipment_investment(year) { if (year === 0) return -1 * (params.equipment_cost); return 0}
+	function total_loan_amount(year) {if (year === 0) return -1 * (equipment_investment(0) + nwc_investment(0) + grant_support(0)); return 0 }
+	function interest(year) { if (year === 0) return 0; return -1 * p.int_rate  * total_loan_amount(0) }
+
+	function grant_support(year) {
+		switch(year) {
+			case 0: return p.yr0_grant; break;
+			case 1: return p.yr1_grant; break;
+			case 2: return p.yr2_grant; break;
+			case 3: return p.yr3_grant; break;
+			case 4: return p.yr4_grant; break;
+			case 5: return p.yr5_grant; break;
+			default: return 0;
+		}
+	}
+
+	function free_cash_flow(year) { 
+		fcf = 
+		//operating
+			total_revenue(year) + 
+			total_var_costs(year) + 
+			fixed_costs(year) + 
+			get_taxes(year) + 
+		//NWC
+			nwc_investment(year) +
+		//Initial Investment
+			equipment_investment(year) + 
+		//Other
+			grant_support(year);
+			return fcf;
+	}
+	function get_cash_flow(year) { return free_cash_flow(year) + interest(year) }
+	function get_cumulative_cash_flow(year) { return d3.sum( d3.range(0, year+1).map(function(year) { return get_cash_flow(year) }) ) }
+	function get_discounted_cash_flow(year) { return discounted_cash_flow(free_cash_flow(year), p.int_rate, year) }
+	function get_project_npv() { return d3.sum( [0,1,2,3,4,5].map(function(year) { return get_discounted_cash_flow(year) }) ) }
+	function get_func_npv(func) { return d3.sum( [0,1,2,3,4,5].map(function(year) { return discounted_cash_flow(func(year), p.int_rate, year) }) ) }
+	// NPV Costs vs Revenue
+	// type
+	// growth rate demand, growth rate price, demand for type, price for type, variable costs for type
+	// 
+	// Annual Free Cash Flow
+	// var year num
+	// All calculations
+
+	function discounted_cash_flow(flow, rate, year) { return flow / Math.pow(1 + rate, year)}
+	
+	function left_boundary() { return params.l_margin; }
+	function right_boundary() { return params.w * params.scale - params.r_margin; }
+	function top_boundary() { return params.t_margin; }
+	function bottom_boundary() { return params.h * params.scale - params.b_margin; }
+	
+	
+	function pf(num) {
+		return parseFloat(num.replace(",", ""));
+	}
+	
+	function init_viz_element(svg, elem_with_class, data) {
+		var elem_parts = elem_with_class.split(".");
+		var elem = elem_parts[0];
+		var elem_class = elem_parts[1];
+		
+		var viz_element = svg.selectAll(elem_with_class).data(data);
+		viz_element.enter().append(elem).attr("class", elem_class);
+		viz_element.exit().remove();
+		
+		return viz_element;
+	}
+	
+	function fill_data_table_row(row_selector, cell_selector, fill_func) {
+		var rows = d3.selectAll(row_selector);
+		var cells = init_viz_element(rows, cell_selector, [0,1,2,3,4,5])
+			.text(function(d) {return fill_func(d).toFixed(2)});
+		
+	}
+	
+	function fill_data_table_row_with_data(row_selector, cell_selector, data) {
+		var rows = d3.selectAll(row_selector);
+		var cells = init_viz_element(rows, cell_selector, data)
+			.text(function(d) {return d });
+		
+	}
+	
+	function draw_category_axes(svg, x, y, categories) {
+		//------ x Axis -------------------------------------------------------------------
+		var xaxis = init_viz_element(svg, "line.xaxis", ["dummy_data"])
+			.attr("y1", y(0)) //bottom_boundary())
+			.attr("y2", y(0)) //bottom_boundary())
+			.attr("x1", function(d) {return left_boundary()})
+			.attr("x2", function(d) {return right_boundary()})
+			.attr("stroke", params.x_axis_color);
+
+		// var xticks = init_viz_element(svg, "line.xtick", categories)
+		// 	.attr("y1", bottom_boundary())
+		// 	.attr("y2", bottom_boundary() + params.tick_length )
+		// 	.attr("x1", function(d) {return x(d) + x.rangeBand() / 2;})
+		// 	.attr("x2", function(d) {return x(d) + x.rangeBand() / 2;})
+		// 	.attr("stroke", params.x_axis_color);
+		
+		var xtick_labels = init_viz_element(svg, "text.xtick_label", categories)
+			.attr("x", function(d) { return x(d) + x.rangeBand() / 2;})
+			.attr("y", bottom_boundary())
+			.attr("fill", params.x_axis_fontcolor)
+			.attr("font-size", params.x_axis_fontsize+"px")
+			.attr("transform", function(d) {return "rotate("+params.x_axis_font_rotation +" "+ (x(d)+ (x.rangeBand() / 2) +params.tick_length*4).toString() + "," + bottom_boundary() + ")"; })
+			.attr("text-anchor", "end")
+			.text(function(d) {return d });
+
+		//------ x Axis End -------------------------------------------------------------------
+		
+		
+		//------ y Axis -------------------------------------------------------------------
+		var yaxis = init_viz_element(svg, "line.yaxis", ["dummy_data"])
+			.attr("x1", left_boundary())
+			.attr("x2", left_boundary())
+			.attr("y1", function(d) {return top_boundary()})
+			.attr("y2", function(d) {return bottom_boundary()})
+			.attr("stroke", params.y_axis_color);
+		
+		var yticks = init_viz_element(svg, "line.ytick", y.ticks(10))
+			.attr("y1", function(d) {return y(d)})
+			.attr("y2", function(d) {return y(d)})		
+			.attr("x1", left_boundary() - params.tick_length)
+			.attr("x2", left_boundary() )
+			.attr("stroke", params.y_axis_color);
+		
+		var ytick_labels = init_viz_element(svg, "text.ytick_label", y.ticks(10))
+			.attr("y", function(d) { return y(d) + (params.y_axis_fontsize / 3.5)})
+			.attr("x", left_boundary() - params.tick_length * 1.5)
+			.attr("fill", params.y_axis_fontcolor)
+			.attr("font-size", params.y_axis_fontsize+"px")
+			.attr("text-anchor", "end")
+			.text(function(d) {return (d > 1000 || d < -1000) ? d / 1000 + "K" : d; });
+
+		//------ y Axis End -------------------------------------------------------------------
+	}
+	function draw(data) {
+		
+		//storing values to restore at the end
+		var scale = params.scale,
+			w = params.w,
+			h =	params.h,
+			t_margin = params.t_margin,
+			r_margin = params.r_margin,
+			b_margin = params.b_margin,
+			l_margin = params.l_margin,
+			bar_width = params.bar_width ,
+			bar_divider = params.bar_divider;
+		
+		data = get_assumption_array();
+
+		var assumptions_table = d3.selectAll("table#assumptions");
+		var assumption_rows = init_viz_element(assumptions_table, "tr.assumption-row", data);
+		var assumption_cells = init_viz_element(assumption_rows, "td.assumption-cell", function(d) {return [d.label, d.value] })
+			.text(function(d) { return d });
+		
+		//-----------------------------------------------------------------------
+		
+		
+		//preparing SVG Area
+		
+		params.r_margin = 100;
+		params.l_margin = 75;
+		var cumulative_cash_flows = [0,1,2,3,4,5].map( function(year){ return {x: year, y: get_cumulative_cash_flow(year)}; });
+		var svg = d3.selectAll("svg#annual_cash_flows");
+		svg.
+			attr("height", function(d,i) {return params.h * params.scale}).
+			attr("width", function(d) {return params.w * params.scale})
+			.data([cumulative_cash_flows]);
+		
+		var max_y = total_revenue(5)+nwc_positive(5)
+		var min_y = total_var_costs(5) + nwc_negative(5) + get_taxes(5) + interest(5) + fixed_costs(5);
+		max_y = (max_y > 150000) ? max_y : 150000;
+		min_y = (min_y < -150000) ? min_y : -150000;
+		var categories = ["Year0","Year1", "Year2", "Year3", "Year4", "Year5"];
+		var x = d3.scale.ordinal().domain(categories).rangePoints([left_boundary(), right_boundary() ]);
+		var xbar = d3.scale.ordinal().domain(categories).rangeBands([left_boundary(), right_boundary() ], params.bar_width);
+		var y = d3.scale.linear().domain([min_y, max_y]).range([bottom_boundary(), top_boundary() ]);
+		var color = d3.scale.linear().domain([0, 3]).range(["#C3B6B2", "#664F41"]);
+		
+		var stack = d3.layout.stack()
+		var layers = stack([
+				[0,1,2,3,4,5].map( function(year){ return {text:"Revenue", x: "Year"+year , y:total_revenue(year)+nwc_positive(year) }}) ,
+				[0,1,2,3,4,5].map( function(year){ return {text:"", x: "Year"+year , y:0 }}) ,
+				[0,1,2,3,4,5].map( function(year){ return {text:"", x: "Year"+year , y:total_loan_amount(year) }}) ,
+				[0,1,2,3,4,5].map( function(year){ return {text:"Grants", x: "Year"+year , y:grant_support(year) }}) ,
+			]);
+			
+		var layer = init_viz_element(svg, "g.layer", layers)
+		    .style("fill", function(d, i) { return color(i); });
+
+		var labor_rect = init_viz_element(layer, "rect.cash_elem", function(d) {return d;})
+		    .attr("x", function(d) { return xbar(d.x); })
+		    .attr("y", function(d) { return y(d.y0 + d.y); })
+		    .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+		    .attr("width", xbar.rangeBand());
+
+		var labor_rect_labels = init_viz_element(layer, "text.rect_cash_label", function(d) { return d;})
+			.attr("x", right_boundary() + 5)
+			.attr("y", function(d) { return y(d.y0 + d.y) + (y(d.y0) - y(d.y0 + d.y)) / 2; })
+			.attr("font-size", 18)
+			.text(function(d,i) { return (i === 5) ? d.text : ""}); //only take the last year
+			
+		var negative_layers = stack([
+				[0,1,2,3,4,5].map( function(year){ return {text:"Printing", x: "Year"+year , y:total_var_costs(year) + nwc_negative(year) + get_taxes(year) }}) ,
+				[0,1,2,3,4,5].map( function(year){ return {text:"Staff/Maint", x: "Year"+year , y:fixed_costs(year) }}) ,
+				[0,1,2,3,4,5].map( function(year){ return {text:"Interest", x: "Year"+year , y:interest(year) }}) ,
+				[0,1,2,3,4,5].map( function(year){ return {text:"", x: "Year"+year , y:equipment_investment(year) }}) ,
+			]);
+			
+		var neg_layer = init_viz_element(svg, "g.neg_layer", negative_layers)
+		    .style("fill", function(d, i) { return color(i); });
+
+		var neg_labor_rect = init_viz_element(neg_layer, "rect.neg_cash_elem", function(d) {return d;})
+		    .attr("x", function(d) { return xbar(d.x); })
+		    .attr("y", function(d) { return y(d.y0); })
+		    .attr("height", function(d) { return  y(d.y) - y(0)  })
+		    .attr("width", xbar.rangeBand());
+
+		var neg_labor_rect_labels = init_viz_element(neg_layer, "text.neg_rect_cash_label", function(d) { return d;})
+			.attr("x", right_boundary() + 5)
+			.attr("y", function(d) { return y(d.y0) + (y(d.y) - y(0)) / 2; })
+			.attr("font-size", 18)
+			.text(function(d,i) { return (i === 5) ? d.text : ""}); //only take the last year
+
+		var point_markers = init_viz_element(svg, "circle.point-marker", cumulative_cash_flows)
+			.attr("r", 3)
+			.attr("cx", function(d) { return xbar(d.x) + xbar.rangeBand() / 2; })
+			.attr("cy", function(d) { return y(d.y); })
+			.attr("fill", "red");
+			//.attr("stroke", params.area_color);
+			
+		var line = init_viz_element(svg, "path.line", function(d) { return [d]; })
+		     .attr("d", d3.svg.line()
+		     		     	.x(function(d) { return xbar(d.x) + xbar.rangeBand() / 2; })
+		     		      	.y(function(d) { return y(d.y); })
+		     		  	)
+			.attr("stroke", "red")
+			.attr("fill", "none");
+		draw_category_axes(svg, xbar, y, categories)
+
+		var labels_text = [
+			{value: "Loan", xpos: xbar("Year0") + xbar.rangeBand()-12 , ypos: y(0) - 50, color:"#664F41"},
+			{value: "EBM Initial Cost", xpos: xbar("Year0") + xbar.rangeBand() -12, ypos: y(0) + 20, color:"white"},
+		];
+		
+		var cash_labels = init_viz_element(svg, "text.bar_rect_label", labels_text)
+			.attr("x", function(d) { return d.xpos; })
+			.attr("y", function(d) { return d.ypos; })
+			.attr("fill", function(d) { return d.color; })
+			.attr("font-size", 18)
+			.attr("transform", function(d) {return "rotate("+270 +" "+ (d.xpos).toString() + "," + d.ypos.toString() + ")"; })
+			.attr("text-anchor", "end")
+			//.attr("font-weight", "bold")
+			.text(function(d) { return d.value });
+			
+		var labels_text = [
+			{value: "Revenues", xpos: 20 , ypos: 150},
+			{value: "Expenses", xpos: 20 , ypos: 400},
+		];
+		
+		var cash_labels = init_viz_element(svg, "text.cash_label", labels_text)
+			.attr("x", function(d) { return d.xpos; })
+			.attr("y", function(d) { return d.ypos; })
+			.attr("fill", "#D9CEB6")
+			.attr("font-size", 24)
+			.attr("transform", function(d) {return "rotate("+270 +" "+ (d.xpos).toString() + "," + d.ypos.toString() + ")"; })
+			.attr("text-anchor", "end")
+			.attr("font-weight", "bold")
+			.text(function(d) { return d.value });
+		
+		var label_box_size = 40;
+		var label_padding = 10;
+		
+		var npv_label_box = init_viz_element(svg, "rect.npv_label_box", [get_project_npv()])
+			.text(function(d) {return "$" + d.toFixed(0) })
+			.attr("x", label_padding + left_boundary())
+			.attr("y", top_boundary() )
+			.attr("width", label_box_size * 3.5)
+			.attr("height", label_box_size)
+			.attr("fill", function(d) { return d > 0 ? "#664F41" : "red" });
+
+		var npv_label = init_viz_element(svg, "text.npv_label", [get_project_npv()])
+			.text(function(d) {return (d < 0) ? "-$" + d.toFixed(0)*-1 : "$" + d.toFixed(0) })
+			.attr("x", label_padding* 2 + left_boundary())
+			.attr("y", label_box_size + top_boundary() - label_padding )
+			.attr("font-size", label_box_size - label_padding)
+			.attr("fill", "white");
+			
+		//preparing SVG Area
+		params.r_margin = 70;
+		params.l_margin = l_margin;
+		params.scale = 0.65;
+		params.h = params.h / 1.5;
+		//params.w = params.w / 1.5;
+		svg = d3.selectAll("svg#weekly_labor");
+		svg.
+			attr("height", function(d,i) {return params.h * params.scale}).
+			attr("width", function(d) {return params.w * params.scale});
+					
+		var max_y_val = 40; 
+		var categories = ["Year1", "Year2", "Year3", "Year4", "Year5"];
+		var x = d3.scale.ordinal().domain(categories).rangePoints([left_boundary(), right_boundary() ]);
+		var xbar = d3.scale.ordinal().domain(categories).rangeBands([left_boundary(), right_boundary() ], params.bar_width);
+		var y = d3.scale.linear().domain([0, max_y_val]).range([bottom_boundary(), top_boundary() ]);
+		var color = d3.scale.linear().domain([0, 3]).range(["#C3B6B2", "#664F41"]);
+		
+		var stack = d3.layout.stack()
+		var layers = stack([
+				[1,2,3,4,5].map( function(year){ return {x: "Year"+year , y:free_hours_per_week(year), text: "flex" }}) ,
+				[1,2,3,4,5].map( function(year){ return {x: "Year"+year , y:printing_hours_per_week(year), text: "books" }}) ,
+				[1,2,3,4,5].map( function(year){ return {x: "Year"+year , y:project_hours_per_week(year), text: "projects" }}) ,			
+			]);
+			
+		var layer = init_viz_element(svg, "g.layer", layers)
+		    .style("fill", function(d, i) { return color(i); });
+
+		var labor_rect = init_viz_element(layer, "rect.labor_elem", function(d) {return d;})
+		    .attr("x", function(d) { return xbar(d.x); })
+		    .attr("y", function(d) { return y(d.y0 + d.y); })
+		    .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+		    .attr("width", xbar.rangeBand());
+		
+		var labor_rect_labels = init_viz_element(layer, "text.labor_label", function(d,i) { return d;})
+			.attr("x", right_boundary() + 5)
+			.attr("y", function(d) { return y(d.y0 + d.y) + (y(d.y0) - y(d.y0 + d.y)) / 2; })
+			.attr("font-size", 16)
+			.text(function(d,i) { return (i === 4) ? d.text : ""}); //only take the last year
+			
+		draw_category_axes(svg, xbar, y, categories);
+		
+		var labels_text = [
+			{value: "Hours", xpos: 15 , ypos: 100},
+		];
+		
+		var cash_labels = init_viz_element(svg, "text.cash_label", labels_text)
+			.attr("x", function(d) { return d.xpos; })
+			.attr("y", function(d) { return d.ypos; })
+			.attr("fill", "#D9CEB6")
+			.attr("font-size", 16)
+			.attr("transform", function(d) {return "rotate("+270 +" "+ (d.xpos).toString() + "," + d.ypos.toString() + ")"; })
+			.attr("text-anchor", "end")
+			.attr("font-weight", "bold")
+			.text(function(d) { return d.value });
+		//-------------------------------------------------------------------------
+		
+		// BOOK AND PROJECT BLOCKS -----------------------------
+		svg = d3.selectAll("svg#books_printed");
+		svg.
+			attr("height", function(d,i) {return params.h * params.scale }).
+			attr("width", function(d) {return params.w * params.scale});
+		
+		//make sure this is accurate
+		var books = []; for (i = 0; i < total_book_demand(1) / 52; i++) { books.push(1); }
+		var projects = []; for (i = 0; i < projects_per_year(1) / 52; i++) { projects.push(1); }
+		
+		var v_shift = 40;
+		var h_shift = params.book_row_length * (params.book_block_size+params.book_space_size) + params.block_margin;
+		
+		var books_label = init_viz_element(svg, "text.book_label", [{label:"Books", xpos:0}, {label:"Projects", xpos:h_shift}])
+			.attr("x", function(d) {return d.xpos})
+			.attr("y", v_shift-15)
+			.attr("font-size", 14)
+			.attr("fill", "#404149")
+			.text(function(d) {return d.label;})
+			
+		//alert(books.length + " " +total_book_demand / 52);
+		var book_blocks = init_viz_element(svg, "rect.book_block", books)
+			.attr("x", function(d,i) {return (i % params.book_row_length) * (params.book_block_size+params.book_space_size); } )
+			.attr("y", function(d,i) {return v_shift+parseInt(i / params.book_row_length) * (params.book_block_size+params.book_space_size); } )
+			.attr("height", params.book_block_size)
+			.attr("width", params.book_block_size)
+			.attr("fill", "#968981");
+			
+		
+		var project_blocks = init_viz_element(svg, "rect.project_block", projects)
+			.attr("x", function(d,i) {return h_shift + (i % params.project_row_length) * (params.project_block_size+params.project_space_size); } )
+			.attr("y", function(d,i) {return v_shift + parseInt(i / params.project_row_length) * (params.project_block_size+params.project_space_size); } )
+			.attr("height", params.project_block_size)
+			.attr("width", params.project_block_size)
+			.attr("fill", "#664F41");
+
+				
+		// REVENUES -----------------------------
+		params.scale = scale;
+		params.r_margin = r_margin;
+		params.w = w / 1.5;
+		params.h = 235;
+		params.bar_width = 0.1;
+		params.b_margin = 5;
+		//params.band_divider = 2;
+		var rev_data = [
+				{x:"Self Publish", y:get_func_npv(revenues_from_sp)},
+				{x:"POD Service", y:get_func_npv(revenues_from_pods)},
+				{x:"POD Retail", y:get_func_npv(revenues_from_podr)},	
+			];
+		
+		var cost_data = [
+			{x:"Self Publish", y:get_func_npv(var_costs_with_get_from_sp)},
+			{x:"POD Service", y:get_func_npv(var_costs_with_get_from_pods)},
+			{x:"POD Retail", y:get_func_npv(var_costs_with_get_from_podr)},			
+		];
+		
+		var profit_data = [
+			{x:"Self Publish", y:get_func_npv(revenues_from_sp) + get_func_npv(var_costs_with_get_from_sp)},
+			{x:"POD Service", y:get_func_npv(revenues_from_pods) + get_func_npv(var_costs_with_get_from_pods)},
+			{x:"POD Retail", y:get_func_npv(revenues_from_podr) + get_func_npv(var_costs_with_get_from_podr)},	
+		]
+		var svg = d3.selectAll("svg#revenue_types");
+		svg.
+			attr("height", function(d,i) {return params.h * params.scale}).
+			attr("width", function(d) {return params.w * params.scale})
+					
+		var categories = ["Self Publish","POD Service", "POD Retail"];
+		var x = d3.scale.ordinal().domain(categories).rangePoints([left_boundary(), right_boundary() ]);
+		var xbar = d3.scale.ordinal().domain(categories).rangeBands([left_boundary(), right_boundary() ], params.bar_width);
+		var y = d3.scale.linear().domain([-300000, 700000]).range([bottom_boundary(), top_boundary() ]);
+		var color = d3.scale.linear().domain([0, 4]).range(["#aad", "#556"]);
+		var c_list = ["#968981", "#664F41"]
+		
+		var labor_rect = init_viz_element(svg, "rect.rev_elem", rev_data)
+		    .attr("x", function(d) { return xbar(d.x); })
+		    .attr("y", function(d) { return y(d.y); })
+		    .attr("height", function(d) { return y(0) - y(d.y); })
+		    .attr("width", xbar.rangeBand() / params.band_divider)
+			.attr("fill", c_list[0]);
+		
+		var neg_labor_rect = init_viz_element(svg, "rect.neg_labor_elem", cost_data)
+		    .attr("x", function(d) { return xbar(d.x) })
+		    .attr("y", function(d) { return y(0); })
+		    .attr("height", function(d) { return  y(d.y) - y(0) })
+		    .attr("width", xbar.rangeBand() / params.band_divider)
+			.attr("fill", c_list[1]);
+		
+		var point_markers = init_viz_element(svg, "circle.point-marker", profit_data)
+			.attr("r", xbar.rangeBand()/params.band_divider / 16)
+			.attr("cx", function(d) { return xbar(d.x) + xbar.rangeBand()/params.band_divider / 2; })
+			.attr("cy", function(d) { return y(d.y); })
+			.attr("fill", "red");
+			//.attr("stroke", params.area_color);
+			
+		draw_category_axes(svg, xbar, y, categories)
+			
+		svg = d3.selectAll("svg#book_details");
+		svg.
+			attr("height", function(d,i) {return params.h * params.scale * 1.5 }).
+			attr("width", function(d) {return params.w * params.scale});
+		
+		var row0 = params.row0;
+		var row1 = row0 + params.row1;
+		var row2 = row1 + params.row2;
+		var row3 = row2 + params.row3;
+		var row4 = row3 + params.row4;
+		var row5 = row4 + params.row5;
+		var row6 = row5 + params.row6;
+		var row7 = row6 + params.row7;
+		var row8 = row7 + params.row8;
+		var row9 = row8 + params.row9;
+		
+		var light_size = 15;
+		var dark_size = 16;
+		var light_color = "#D9CEB6";
+		var dark_color = "#664F41";
+		var header_color = "#414149";
+		
+		var table_text = [
+			{value: "Creative", xpos:xbar("Self Publish"), ypos:row0, size: dark_size, color: header_color}, 
+			{value: "Print", xpos:xbar("POD Service"), ypos:row0, size: dark_size, color: header_color}, 
+			{value: "POD", xpos:xbar("POD Retail"), ypos:row0, size: dark_size, color: header_color}, 
+
+			{value: "Projects", xpos:xbar("Self Publish"), ypos:row1, size: dark_size, color: header_color}, 
+			{value: "Shop", xpos:xbar("POD Service"), ypos:row1, size: dark_size, color: header_color}, 
+			{value: "Retail", xpos:xbar("POD Retail"), ypos:row1, size: dark_size, color: header_color}, 
+		
+			{value: p.init_demand_sp.toFixed(0), xpos:xbar("Self Publish"), ypos:row3, size: light_size, color: light_color}, 
+			{value: "$" + p.project_price_sp.toFixed(2), xpos:xbar("Self Publish"), ypos:row4, size: dark_size, color: dark_color}, 
+			
+			{value: p.book_demand_sp.toFixed(0), xpos:xbar("Self Publish"), ypos:row6, size: light_size, color: light_color}, 
+			{value: p.init_demand_pods.toFixed(0), xpos:xbar("POD Service"), ypos:row6, size: light_size, color: light_color}, 
+			{value: p.init_demand_podr.toFixed(0), xpos:xbar("POD Retail"), ypos:row6, size: light_size, color: light_color}, 
+			
+			{value: "$" + p.sales_price_sp.toFixed(2), xpos:xbar("Self Publish"), ypos:row7, size: dark_size, color: dark_color}, 
+			{value: "$" + p.sales_price_pods.toFixed(2), xpos:xbar("POD Service"), ypos:row7, size: dark_size, color: dark_color}, 
+			{value: "$" + p.sales_price_podr.toFixed(2), xpos:xbar("POD Retail"), ypos:row7, size: dark_size, color: dark_color},
+			 
+			{value: (p.demand_growth_sp*100).toFixed(0)+"%", xpos:xbar("Self Publish"), ypos:row9, size: dark_size, color: dark_color}, 
+			{value: (p.demand_growth_pods*100).toFixed(0)+"%", xpos:xbar("POD Service"), ypos:row9, size: dark_size, color: dark_color}, 
+			{value: (p.demand_growth_podr*100).toFixed(0)+"%", xpos:xbar("POD Retail"), ypos:row9, size: dark_size, color: dark_color}, 
+		];
+		
+		var labels_text = [
+			{value: "Set Up", xpos: 40 , ypos: row3 - 10},
+			{value: "Books", xpos: 40 , ypos: row6 - 10},
+			{value: "Growth", xpos: 40 , ypos: row9 - 20}
+		];
+		
+		var table_labels = init_viz_element(svg, "text.table_label", labels_text)
+			.attr("x", function(d) { return d.xpos; })
+			.attr("y", function(d) { return d.ypos; })
+			.attr("fill", light_color)
+			.attr("font-size", dark_size)
+			.attr("transform", function(d) {return "rotate("+270 +" "+ (d.xpos).toString() + "," + d.ypos.toString() + ")"; })
+			.attr("text-anchor", "end")
+			.text(function(d) { return d.value });
+		
+		var books_label = init_viz_element(svg, "text.book_label", table_text)
+			.attr("x", function(d) {return d.xpos})
+			.attr("y", function(d) {return d.ypos})
+			.attr("font-size", function(d) {return d.size})
+			.attr("fill", function(d) {return d.color})
+			.attr("font-weight", "bold")
+			.text(function(d) { return d.value;})
+		
+		var dividers = init_viz_element(svg, "line.divider", [row2, row5, row8])
+			.attr("x1", xbar("Self Publish"))
+			.attr("x2", right_boundary())
+			.attr("y1", function(d) {return d})
+			.attr("y2", function(d) {return d})
+			.attr("stroke", light_color);
+				
+		params.scale = scale;
+		params.w = w;
+		params.h = h;
+		params.t_margin = t_margin;
+		params.r_margin = r_margin;
+		params.b_margin = b_margin;
+		params.l_margin = l_margin;
+		params.bar_divider = bar_divider;
+		params.bar_width = bar_width;
+		
+			
+	}		
+
+
+
+	//read data once and start do initial draw
+	d3.csv("data.csv", draw);	
+	
+	var dat_guis = {
+		chart 			: gui.addFolder('chart'),
+		fin_details 	: gui.addFolder('financial details'),
+		op_details 		: gui.addFolder('operational details'),
+		operator_wages 	: gui.addFolder('operator wages'),
+		grant_support 	: gui.addFolder('grant support'),
+		self_publishing : gui.addFolder('self publishing'),
+		pod_service 	: gui.addFolder('POD Service'),
+		pod_retail 		: gui.addFolder('POD Retail'),
+		equipment 		: gui.addFolder('Equipment'),
+	};
+	
+	d3.entries(dat_gui_ranges_with_folder).forEach(function(elem) { 
+		var attr = elem.key;
+		var range = elem.value;
+		var folder = range[0];
+		dat_guis[folder].add(params, attr, range[1], range[2]).onChange(function() { draw(params.viz_data); });
+	} ); 
+	
+	//add color or custom controls here
+	
+	</script>
+	<style>
+		body {font-family: Helvetica, Arial, sans-serif; }
+		svg { /*border: 1px solid gray; */}
+		table {border: 1px solid red;}
+		h1 {font-size:42px; color:#414149; margin:0;}
+		h2 {font-size:18px; color:#414149; margin:0; border-bottom:1px solid #414149 ;}
+		h3 {font-size:18px; color:#D9CEB6; margin:20px 0 10px 0; }
+		div#column1 {width: 500px; float:left; padding:10px; margin: 10px 20px 0 10px;}
+		div#column2 {width: 320px; float:left; padding:10px; margin: 10px 20px 0 10px;}
+		div#column3 {width: 340px; float:left; padding: 10px; margin: 10px 20px 0 10px;}
+		
+	</style>
+	
+	<div id="column1">
+		<h2>EBM Value</h2>
+		<svg id="annual_cash_flows"></svg>
+	</div>
+	<div id="column2">
+		<h2>Weekly Operations</h2>
+		<h3>Capacity</h3>
+		<svg id="weekly_labor"></svg>
+		<h3>Output</h3>
+		<svg id="books_printed"></svg>
+	</div>
+	<div id="column3">
+		<h2>Product Lines</h2>
+		<svg id="revenue_types"></svg>
+		<svg id="book_details"></svg>
+	</div>
+	<!-- <table id="assumptions"></table> -->
+</body>
+</html>
+

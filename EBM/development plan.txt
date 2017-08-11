@@ -1,0 +1,223 @@
+Scenarios
+- Full time POD Service
+- Organic Sales, all volunteer op
+- grants to fund operator
+- leased equipment
+- grant funding for equipment
+
+
+Styling Tasks
+
+Labels to Add
+All Side
+Books / Projects (/week)
+Revenues
+Expenses
+Hours
+Set Up
+Books
+Growth
+
+
+
+
+COLUMN 1
+# 1. EBM Value Title / HTML
+# 2. Chart / SVG
+- Add Revenues and Expenses Labels to SVG
+# - Control Categories and colors
+- Add side labels
+- Add Black EBM Label
+# - NPV Square
+# - make height paramter
+# - make width paramter
+
+COLUMN 2
+# 1.) WEEKLY OPERATIONS
+# 2.) Capacity Title
+# 3.) SVG
+# - make height parameter
+# - column width parameter
+- put in labels
+- tighten up year labels
+
+
+# 6. Books Printed Table / SVG
+# - set up parameters: use division parameter
+# - book box size parameter
+# - project box size parameter
+# - style titles in CSS
+
+
+COLUMN 2 / All SVG
+
+COLUMN 3
+# 1. Product Lines Title / HTML
+# 2. Chart / SVG
+# 3. Table / SVG (use same x axis as above)
+# - set width parameter
+# - set height parameter
+# - add table-height parameter
+# - section heigh parameter
+# - first_layer offset parameter
+# - second_layer offset parameter
+# - third layer offset parameter
+
+Development Tasks
+# 1.) Red / Black NPV large
+# 2.) Path for Payback
+# 5.) Difference sizes for the different graphs
+# 6.) income types graph
+
+# 3.) Pick colors for cash flows (can do in html, illustrator for colors)
+# 4.) Label Cash Flows
+# 7.) Pick colors for income types
+# 8.) Pick colors for work hours
+# 9.) Label Work hours (can do in HTML)
+# 10.) Overall layout
+# 11.) boxes for books / week + projects / week
+# 12.) STyle table
+# Key Values to Show
+# NPV
+# Project Demand / Price
+
+
+# d3.scale.category20b()
+Constructs a new ordinal scale with a range of twenty categorical colors: #393b79 #5254a3 #6b6ecf #9c9ede #637939 #8ca252 #b5cf6b #cedb9c #8c6d31 #bd9e39 #e7ba52 #e7cb94 #843c39 #ad494a #d6616b #e7969c #7b4173 #a55194 #ce6dbd #de9ed6.
+
+# d3.scale.category20c()
+Constructs a new ordinal scale with a range of twenty categorical colors: #3182bd #6baed6 #9ecae1 #c6dbef #e6550d #fd8d3c #fdae6b #fdd0a2 #31a354 #74c476 #a1d99b #c7e9c0 #756bb1 #9e9ac8 #bcbddc #dadaeb #636363 #969696 #bdbdbd #d9d9d9.
+
+Variables And Assumption Ranges
+-Tax Rate
+-Loan Interest Rate
+-Working Capital Needs %10 - 150%
+
+- Average Cost per Page: .02 (.01 - .05)
+- Time to set up a project: .5-2hrs
+- Time to print a book: 3min - 8 min
+
+- Year 1 Operator Wages: 0 - 50K
+- Year 2 Operator Wages: 0 - 50K
+- Year 3 Operator Wages: 0 - 50K 
+- Year 4 Operator Wages: 0 - 50K
+- Year 5 Operator Wages: 0 - 50K
+
+- Year 0 Grant Support: 0 - 100K
+- Year 1 Grant Support: 0 - 150K
+- Year 2 Grant Support: 0 - 150K
+- Year 3 Grant Support: 0 - 100K
+- Year 4 Grant Support: 0 - 100K
+- Year 5 Grant Support: 0 - 100K
+
+Self Publishing
+- Initial Project Demand
+- Average Project Price
+- Demand Growth
+- Price Growth
+- Average number of Books per Project
+- Average Pages per Book
+- Average Sales Price
+
+Print on Demand Service
+- Initial Books Demand
+- Required profit Margin
+- Demand Growth
+- Average Pages / Book
+(need to display some stats for things somewhere on screen. Average prices, etc)
+
+Print on Demand Retail
+- Initial Year Deman
+- % content fee
+- Demand Growth
+- Average pages per book
+- Average Sales Price
+
+EBM Cost 60-80K
+Installation Cost 10 K
+Software Licensing Cost 15-25K
+Printer Cost 5-15K
+Monthly Service 0-1000 (600 default)
+
+
+graphs 
+
+days/weeks - can be made
+var year num 
+growth rate, ps_demand, pods_demand, podr_demand, time_per_proj, time_per_book
+
+NPV Costs vs Revenue
+type
+growth rate demand, growth rate price, demand for type, price for type, variable costs for type
+
+Annual Free Cash Flow
+var year num
+All calculations
+
+Cash Flows (all functions take year)
+Revenues from SP
+Revenues from PODS
+Revenues from PODR
+Variable Costs from SP
+Variable Costs from PODS
+Variable Costs from PODR
+Fixed Costs
+Taxes
+Interest
+
+sum of these things
+
+
+# 1.) figure out how to create groups
+# var f2 = gui.addFolder('Letters');
+# f2.add(text, 'growthSpeed');
+# (modify function to take groups)
+# 
+# 2.) Create control board with groups
+
+# 3.) Create Assumptions panel with all simple stats
+# SVG Columns to place things
+# Side Table
+# column 1 Label Column 2 Value (Table in HTML. Row. Append two TDs? )
+
+4.) Create tables with all details and intermediate calculations
+depending on how above works out
+
+5.) Create sections for each chart (different SVGs)
+
+6.) Create NPV Chart in SVG
+
+7.) Create cash flows chart in SVG
+
+8.) Create comparison in SVG
+
+9.) Create daily, weekly amounts in SVG
+
+
+
+
+
+
+
+1.) Create 3 axes-
+x - categorical axis
+y - dollar scale 0 - $9000 (max of value range)
+r - radius scale 0 - 9000 (sqrt)
+
+2.) Create CSV with data (no totals)
+
+3.) In design variables
+-radius scale max
+-x scale width
+-y scale max
+
+4.) Create ticks and labels
+
+5.) Pick colors (green / gold in a series)
+
+6.) plot points
+
+7.) put in export code and button
+
+Tricky things
+boxes and potential stacked bar chart
