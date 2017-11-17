@@ -322,8 +322,8 @@ energy = {"nodes": nodes, "links": links };
       .nodes(energy.nodes)
       .links(energy.links)
       .layout(32);
-      
-  console.out(energy);
+
+  console.log(energy);
 
   var link = svg.append("g").selectAll(".link")
       .data(energy.links)
