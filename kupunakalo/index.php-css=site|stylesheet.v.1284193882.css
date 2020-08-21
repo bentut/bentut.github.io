@@ -1,0 +1,187 @@
+/*use zen to create webpages.*/
+
+html {font-family:Arial, Helvetica, sans-serif;}
+body {background:url("images/panel_bg/main_bg.jpg"); margin:0; padding:0;}
+
+
+* :focus { outline: 0; }
+
+#preloader {
+    /* Images you want to preload*/
+    background-image:url("images/nav/curriculum_g.png");
+    background-image:url("images/nav/field_visits_g.png");
+    background-image:url("images/nav/kalo_varieties_g.png");
+    background-image:url("images/nav/nutrition_g.png");
+    background-image:url("images/nav/resources_g.png");
+    background-image:url("images/nav/contact_g.png");
+    width: 0px;
+    height: 0px;
+    display: inline;
+}
+
+a {color:#61634c; text-decoration:none;}
+a:hover {text-decoration:underline;}
+
+div#container {width:998px; padding:0 40px 40px 40px; margin:0 0 0 87px; min-height:100%; position:relative; background:url("images/panel_bg/shadow.png") repeat-y;} 
+div#logo {padding:50px 0 0 0px;} 
+div#logo img {border:0}
+div#nav {margin:30px 0 8px 0; height:31px; background:url("images/headers/nav.png") no-repeat;} 
+ul#navlist {list-style:none; margin:0 0 0 10px; padding:0;}
+ul#navlist li {float:left; border-right:1px dotted #d2d3c3; margin-top:5px;}
+ul#navlist li a img {border:0;}
+ul#navlist li a {display:block; height:20px; text-indent:-9999px;}
+
+a#curriculum_nav {width:84px; background:url("images/nav/curriculum.png") no-repeat 0 3px;}
+a#fieldvisits_nav {width:94px; background:url("images/nav/field_visits.png") no-repeat 0 3px;}
+a#kalo_nav {width:109px; background:url("images/nav/kalo_varieties.png") no-repeat 0 3px;}
+a#nutrition_nav {width:80px; background:url("images/nav/nutrition.png") no-repeat 0 3px;}
+a#resources_nav {width:84px; background:url("images/nav/resources.png") no-repeat 0 3px;}
+a#contact_nav {width:79px; background:url("images/nav/contact.png") no-repeat 0 3px;}
+
+a#curriculum_nav:hover {width:84px; background:url("images/nav/curriculum_g.png") no-repeat 0 3px;}
+a#fieldvisits_nav:hover {width:94px; background:url("images/nav/field_visits_g.png") no-repeat 0 3px;}
+a#kalo_nav:hover {width:109px; background:url("images/nav/kalo_varieties_g.png") no-repeat 0 3px;}
+a#nutrition_nav:hover {width:80px; background:url("images/nav/nutrition_g.png") no-repeat 0 3px;}
+a#resources_nav:hover {width:84px; background:url("images/nav/resources_g.png") no-repeat 0 3px;}
+a#contact_nav:hover {width:79px; background:url("images/nav/contact_g.png") no-repeat 0 3px;}
+
+
+div#titlebar,
+div#titlebar-home,
+div#titlebar div#sectionheader,
+div#titlebar div#subsectionheader {height:90px; margin-bottom:10px;}
+div#titlebar,
+div#titlebar-home,
+div#pageheader h3 {font-family: Times, "Times New Roman", serif }
+
+div#titlebar,
+div#titlebar-home {clear:both; color:#cde0a0; font-size:24px;}
+
+div#titlebar {clear:both;background:url("images/panel_bg/green_on_green.png") no-repeat;/*background-color:#81b212;*/ } 
+div#titlebar div#sectionheader { position: relative; /*background:#5a7c0d;*/width:210px; color:#FFFFFF;float:left;} 
+div#titlebar div#sectionheader h1 { position:absolute; bottom:15px; left:20px; font-size:30px; vertical-align:bottom; margin:0; padding:0; font-weight:normal; } /*margin-top, fontsize, color*/
+div#titlebar div#subsectionheader { position:relative; width:750px; float:left;}
+div#titlebar div#subsectionheader h2 { position:absolute; bottom:15px; left:22px; font-size:24px; vertical-align:bottom; margin:0; padding:0; font-weight:normal;}
+/*margin top, (vertical align?), font-size, color*/
+
+div#contentpane {float:left; width:750px;  }
+div#subtitlebar,
+div#subtitlebar div#pageheader,
+div#subtitlebar div#secondary {height:103px;margin-bottom:10px;}
+
+div#subtitlebar-kv {margin:0 0 10px 0; height:289px;}
+div#subtitlebar-kv div#viewline {background:url("images/panel_bg/yellow_top.png") no-repeat; height:39px; margin:0; padding:0;}
+div#subtitlebar-kv div#pageheader {background:url("images/panel_bg/black_left_large.png") no-repeat; height:250px;}
+/*div#subtitlebar-kv div#secondary {background-color:#000000; height:250px;}*/
+div#subtitlebar-kv p {}
+div#header-content {position:absolute; bottom:20px; right:20px; width:250px;}
+div#subtitlebar-kv div#header-content p {position:relative; color:#888888; }
+div#subtitlebar-kv div#header-content h3 {position:relative;}
+div#subtitlebar-kv div#header-content h4 {position:relative; border-bottom:1px dotted #888888; margin-bottom:10px; padding-bottom:8px;}
+
+div#subtitlebar{/*background-color:#000000;*/  } /*bgcolor, corners*/
+div#pageheader {position:relative; background:url("images/panel_bg/black_left.png") no-repeat;  width:327px; margin:0; padding:0; float:left; font-family:Arial, Helvetica, sans-serif; font-size:12px;}
+div#pageheader h3 {/*position:absolute;right: 20px; bottom:30px; width:300px; */text-align:right;  font-size:24px; color:#FFFFFF; font-weight:normal; margin:40px 0 0 0px; padding:0px;}
+div#pageheader h4 {/*position:absolute;right: 20px; bottom:15px; width:300px; */text-align:right;  color:#81b212; margin:0px; padding:0px;}
+div#secondary {position:relative;  margin:0; padding:0; border-left:1px dotted #000000; width:422px; float:left;}
+div#subtitlebar div#secondary {background:url("images/panel_bg/black_right.png") no-repeat; }
+div#subtitlebar p,
+div#subtitlebar-kv p {position:absolute; /*bottom:15px; left:15px; */color:#FFFFFF; font-size:12px; margin:0; padding:0px;}
+div#subtitlebar p#page-desc {bottom:15px; left:15px; padding-right:20px;}
+div#secondary .trcorner {position:absolute; top:0px; right:0px;}
+div#secondary .brcorner {position:absolute; bottom:0px; right:0px;}
+
+div#subnav {float:left;width:212px; margin-right:10px; min-height:30px; clear:both;}
+div#subnav ul {list-style:none; padding:0 0 0 20px; margin:15px 0 0 0;}
+div#subnav ul li {line-height:15px; font-size:11px; text-transform:uppercase; margin-top:15px;} 
+div#subnav ul li a {text-decoration:none; color:#898c6f;}
+div#subnav ul li a:hover,
+div#subnav ul li.on a {color:#628d00;}
+
+div#subnav ul#kv-nav li {margin-top:0px;} 
+
+/*Can also use body#tinymce */
+div#content,
+body.mceContentBody {background-color:#d0d1c5; color:#777a59/*#898c6f*/;  padding:18px; font-size:12px; background:url("images/panel_bg/gray_top.png") no-repeat #d0d1c5;} 
+div#content div.leftcol,
+body.mceContentBody div.leftcol {width:310px;float:left;margin-right:18px;}
+div#content div.rightcol,
+body.mceContentBody div.rightcol {width:380px;float:left;}
+div#content p,
+body.mceContentBody p {padding:0; margin:0;line-height:16px;}
+div#content h5,
+body.mceContentBody h5 {font-weight:bold; font-size:12px; color:#61634c; margin:0; padding:0; text-transform:uppercase;}
+div#content h6,
+body.mceContentBody h6  {font-weight:normal; font-size:12px; margin:0; padding:0;}
+
+div#content div.divider,
+body.mceContentBody div.divider {clear:both; border-bottom:1px dotted #61634c;}
+div#content div.full-width,
+body.mceContentBody div.full-width{clear:both; float:left;}
+div#content div.one-third,
+body.mceContentBody div.one-third {float:left; width:200px; margin-right:18px;}
+
+div#content div.divider,
+div#content p,
+body.mceContentBody div.divider,
+body.mceContentBody p {margin-bottom:10px;}
+
+div#footer {background:url("images/panel_bg/gray_bottom.png") no-repeat; height: 70px; text-transform:uppercase;padding-top:10px; font-size:12px; color:#898c6f;}
+div#kalo-images {border-top:1px dotted #898C6F; clear:both; margin:15px 0 0 0; padding:15px 0 0 0; }
+div#kalo-images ul {list-style:none; padding:0; margin:0;}
+div#kalo-images ul li {float:left; margin: 10px 5px 0px 0px;}
+div#kalo-images ul li img {border:1px solid #000000;}
+
+ul#resource-books {list-style:none; margin:0; padding-left:10px;}
+ul#resource-books li {float:left; width:350px;}
+ul#resource-books li.nextline {clear:both;}
+div.coverimage {width:100px; margin-right:15px; float:left;}
+div.bookinfo {float:left; width:200px; }
+div#content h5.booktitle {margin-bottom:10px;}
+p.bookinfo {}
+p.bookdesc {font-style:italic;}
+
+a#content-learnabout,
+a#kalo-learnabout {display:block; font-family:serif; font-size: 24px; margin-left:220px; padding: 7px 0 0 32px; background:url("images/buttons/arrow.png") no-repeat 0 7px; color:#FFFFFF; text-decoration:none; height:28px;}
+a#kalo-learnabout {margin-left:15px;}
+span.subtitle-learnabout {font-family:Arial, Helvetica, sans-serif; font-size:11px; text-transform:uppercase;}
+
+a#hte-learnabout {display:block; background:url("images/buttons/learnabouts_howtoeat.png") no-repeat; width:97px; height:36px;position:absolute; right:80px; top:230px;}
+a#kf-learnabout{display:block;background:url("images/buttons/learnabout_kalofarms.png") no-repeat 0 7px; width:191px; height:36px; margin-left:220px; padding:7px 0 0 0;}
+
+ul#kalo-image-index {list-style:none; padding:15px 0 0 15px; margin: 0 0 0 0;}
+ul#kalo-image-index li { float:left; width:100px; height:100px; margin:0 0 10px 10px; border:1px solid #000000; background-color:#000000;}
+a.kalo-index-link {display:block; position:relative; height:100px; width:100px; text-decoration:none;}
+/*
+a.kalo-index-link:hover img{opacity:0.4;filter:alpha(opacity=40);}
+a.kalo-index-link img {display:block; position:absolute; top:0px; left:0px; border:0;}
+a.kalo-index-link:hover h4 {color:#FFFFFF; text-decoration:none;}
+*/
+a.kalo-index-link:hover img{opacity:1; filter:alpha(opacity=100);}
+a.kalo-index-link img {display:block; position:absolute; top:0px; left:0px; border:0; opacity:0.4;filter:alpha(opacity=40);}
+
+
+a.kalo-index-link h4 {position:absolute; top:0px; left:0px; width:97px; text-align:right; text-transform:uppercase; color:#CCCCCC; font-size:11px; font-weight:bold; margin:0; padding:0;}
+a.kalo-index-link h4 {color:#FFFFFF; text-decoration:none;}
+ul#kalo-image-index li:hover {background-color:#333333;}
+
+#content a.kalo-index-link {text-decoration:none;}
+
+/*
+.trcorner {position:absolute; top:0px; right:0px; width:px; height:px; background:url("images/corners/tr_corner.png") no-repeat;}
+.brcorner {position:absolute; bottom:0px; right:0px;}
+.tlcorner {position:absolute; top:0px; left:0px;}
+.blcorner {position:absolute; bottom:0px; left:0px; }
+*/
+
+
+
+div#titlebar-home {height:346px; background:url("images/panel_images/home_page.jpg") no-repeat; }
+div#subtitlebar-home {}
+
+
+/*OR*/
+
+div#nav-and-titlebar-home {/*position:relative; top:-32px; seems to go over... would also need z indices*/margin:-34px 0 8px 0; height:239px; background:url("images/headers/header_with_nav.jpg") no-repeat;}
+div#nav-and-titlebar-home ul#navlist li {margin-top:69px;}
+
